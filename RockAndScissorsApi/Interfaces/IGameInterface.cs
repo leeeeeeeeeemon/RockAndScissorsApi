@@ -6,7 +6,7 @@ namespace RockAndScissorsApi.Interfaces
     public interface IGameInterface
     {
 
-        GameContext _dbcontex { get; set; }
+        
 
         // Создать новую игру
         async Task<Guid> CreateGameAsync(string player1Name)

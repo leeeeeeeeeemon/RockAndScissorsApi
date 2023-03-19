@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RockAndScissorsApi.Classes;
+using RockAndScissorsApi.Contex;
 using RockAndScissorsApi.Interfaces;
 
 namespace RockAndScissorsApi.Controllers
@@ -7,18 +9,26 @@ namespace RockAndScissorsApi.Controllers
     [Route("api/[controller]")]
     public class GamesController : Controller
     {
-        private readonly IGameInterface _gameService;
 
-        public GamesController(IGameInterface gameService)
+        public GameContext _context;
+
+        public GamesController(GameContext context)
         {
-            _gameService = gameService;
+            _context = context;
         }
 
         [HttpPost("createGame/{PlayerName}")]
         public IActionResult CreateGame(string PlayerName)
         {
-            var game = _gameService.CreateGameAsync(PlayerName);
-            return Ok(game);
+            var game = new Game
+            {
+                Id = Guid.NewGuid(),
+                Player1Name = PlayerName,
+                BoardState = "WaitingForSecondPlayer"
+            };
+            _сontext.Games.AddAsync(game);
+            _сontext.SaveChangesAsync();
+            return game.Id;
         }
 
         [HttpPost("{gameId}/join/{PlayerName}")]
