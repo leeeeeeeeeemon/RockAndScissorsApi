@@ -1,16 +1,14 @@
 using Microsoft.EntityFrameworkCore;
-using RockAndScissorsApi.Contex;
+using RockAndScissorsApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-IConfiguration Configuration;
 // Add services to the container.
 
+IConfiguration Configuration;
+var connectionString = builder.Configuration.GetConnectionString("Default");
+
 builder.Services.AddControllers();
-
-var connectionString = builder.Configuration.GetConnectionString("GameContext");
-
-builder.Services.AddDbContext<GameContext>(options =>
-        options.UseSqlite(connectionString));
+builder.Services.AddDbContext<GameDbContext>(options => options.UseMySQL(connectionString));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

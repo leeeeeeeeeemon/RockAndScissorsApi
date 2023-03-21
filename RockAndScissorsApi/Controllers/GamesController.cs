@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RockAndScissorsApi.Classes;
-using RockAndScissorsApi.Contex;
-using RockAndScissorsApi.Interfaces;
+using RockAndScissorsApi.Data;
 
 namespace RockAndScissorsApi.Controllers
 {
@@ -9,20 +7,26 @@ namespace RockAndScissorsApi.Controllers
     [Route("api/[controller]")]
     public class GamesController : Controller
     {
-
-        //[HttpPost("createGame/{PlayerName}")]
-        //public IActionResult CreateGame(string PlayerName)
-        //{
-        //    var game = new Game
-        //    {
-        //        Id = Guid.NewGuid(),
-        //        Player1Name = PlayerName,
-        //        BoardState = "WaitingForSecondPlayer"
-        //    };
-        //    _сontext.Games.AddAsync(game);
-        //    _сontext.SaveChangesAsync();
-        //    return game.Id;
-        //}
+        private readonly GameDbContext _context;
+        public GamesController (GameDbContext context)
+        {
+            _context = context;
+        }
+        [HttpPost("createGame/{PlayerName}")]
+        public int CreateGame(string PlayerName)
+        {
+            var game = new Game
+            {
+                Player1Name = PlayerName,
+                BoardState = "WaitingForSecondPlayer",
+                CurrentPlayerName = PlayerName,
+                Player2Name = "No one",
+                WinnerName = "No one"
+            };
+            _context.Games.Add(game);
+            _context.SaveChanges();
+            return game.Id;
+        }
 
         //[HttpPost("{gameId}/join/{PlayerName}")]
         //public IActionResult JoinGame(Guid gameId, string PlayerName)
