@@ -17,8 +17,8 @@ namespace RockAndScissorsApi.Interfaces
                 Player1Name = player1Name,
                 BoardState = "WaitingForSecondPlayer"
             };
-            await DbContext.Games.AddAsync(game);
-            await _dbContext.SaveChangesAsync();
+            //await DbContext.Games.AddAsync(game);
+            //await _dbContext.SaveChangesAsync();
             return game.Id;
         }
 

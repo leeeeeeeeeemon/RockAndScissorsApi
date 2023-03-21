@@ -7,14 +7,10 @@ IConfiguration Configuration;
 
 builder.Services.AddControllers();
 
-string configPath = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
-IConfigurationRoot config = new ConfigurationBuilder()
-        .AddJsonFile(configPath, optional: false)
-        .Build();
-Configuration = config;
-builder.Services.AddSingleton(config);
+var connectionString = builder.Configuration.GetConnectionString("GameContext");
+
 builder.Services.AddDbContext<GameContext>(options =>
-        options.UseSqlite(Configuration.GetConnectionString("GameContext")));
+        options.UseSqlite(connectionString));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
