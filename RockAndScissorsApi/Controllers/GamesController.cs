@@ -37,10 +37,16 @@ namespace RockAndScissorsApi.Controllers
             {
                 if (game.Player1Name != PlayerName)
                 {
-                    game.Player2Name = PlayerName;
-                    game.BoardState = "- - - - - - - - -";
-                    answer = "You are successfully connected";
-                    _context.SaveChanges();
+                    if(game.Player2Name == "No one")
+                    {
+                        game.Player2Name = PlayerName;
+                        game.BoardState = "- - - - - - - - -";
+                        answer = "You are successfully connected";
+                        _context.SaveChanges();
+                    } else
+                    {
+                        answer = "There are already a maximum number of players in the game";
+                    }
                 }
                 else
                 {
@@ -54,28 +60,67 @@ namespace RockAndScissorsApi.Controllers
             return (answer);
         }
 
-        //[HttpGet("{gameId}")]
-        //public IActionResult GetGame(Guid gameId)
-        //{
-        //    var game = _gameService.GetGameAsync(gameId);
-        //    if (game == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(game);
-        //}
+        [HttpGet("{gameId}")]
+        public string GetGame(int gameId)
+        {
+            string answer;
+            var game = _context.Games.FirstOrDefault(g => g.Id == gameId);
+            if (game == null)
+            {
+                answer = "Game not found";
+            } else
+            {
+                answer = $"Player1Name: {game.Player1Name}, Player2Name: {game.Player2Name}, CurrentPlayerTurn: {game.CurrentPlayerName}, BoardState: {game.BoardState}, IsGameOver: {game.IsGameOver}";
+            }
+            return answer;
+            
+        }
 
-        //[HttpPost("{gameId}/move/{row}/{column}/{PlayerName}")]
-        //public IActionResult MakeMove(Guid gameId, int row, int column, string PlayerName)
-        //{
-        //    var result = _gameService.MakeMoveAsync(gameId, row, column, PlayerName);
-        //    //if (!result.Success)
-        //    //{
-        //    //    return BadRequest(result.ErrorMessage);
-        //    //}
-        //    //return Ok(result.Game);
-        //    return Ok("kk");
-        //}
+        [HttpPost("{gameId}/move/{row}/{column}/{PlayerName}")]
+        public string MakeMove(int gameId, int row, int column, string PlayerName)
+        {
+            string answer;
+            Game game = _context.Games.FirstOrDefault(g => g.Id == gameId);
+            if (game != null)
+            {
+                if(game.CurrentPlayerName == PlayerName)
+                {
+                    string[] gameBoard = game.BoardState.Split(new char[] { ' ' });
+                    if (row > 0 && column > 0 && row <=3 && column <= 3)
+                    {
+                        int pos = (row - 1) * 3 + column;
+                        if (gameBoard[pos] != "-")
+                        {
+                            if (game.CurrentPlayerName == game.Player1Name) gameBoard[pos] = "X";
+                            else gameBoard[pos] = "O";
+                            string resultBoard = "";
+                            foreach (string board in gameBoard)
+                            {
+                                resultBoard += board;
+                                resultBoard += " ";
+                            }
+                            game.BoardState = resultBoard;
+                            game.CurrentPlayerName = game.Player2Name;
+                            _context.SaveChanges();
+                            answer = $"Success! BoardState: {game.BoardState}";
+                        }
+                        answer = "The field is taken";
+                    }
+                    else
+                    {
+                        answer = "Column or line is not properly entered";
+                    }
+
+                } else
+                {
+                    answer = "Its not your turn";
+                }
+            } else
+            {
+                answer = "A game with this id does not exist";
+            }
+            return answer;
+        }
 
         //[HttpGet("{gameId}/winner")]
         //public IActionResult CheckWinner(Guid gameId)
