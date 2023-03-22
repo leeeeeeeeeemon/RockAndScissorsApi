@@ -28,12 +28,31 @@ namespace RockAndScissorsApi.Controllers
             return game.Id;
         }
 
-        //[HttpPost("{gameId}/join/{PlayerName}")]
-        //public IActionResult JoinGame(Guid gameId, string PlayerName)
-        //{
-        //    var playerId = _gameService.JoinGameAsync(gameId, PlayerName);
-        //    return Ok(playerId);
-        //}
+        [HttpPost("{gameId}/join/{PlayerName}")]
+        public string JoinGame(int gameId, string PlayerName)
+        {
+            string answer;
+            Game game = _context.Games.FirstOrDefault(g => g.Id == gameId);
+            if (game != null)
+            {
+                if (game.Player1Name != PlayerName)
+                {
+                    game.Player2Name = PlayerName;
+                    game.BoardState = "- - - - - - - - -";
+                    answer = "You are successfully connected";
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    answer = "The person with this nickname is already joined";
+                }
+            }
+            else
+            {
+                answer = "A game with this id does not exist";
+            }
+            return (answer);
+        }
 
         //[HttpGet("{gameId}")]
         //public IActionResult GetGame(Guid gameId)

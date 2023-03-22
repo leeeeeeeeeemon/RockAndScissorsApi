@@ -10,7 +10,7 @@ using RockAndScissorsApi.Data;
 namespace RockAndScissorsApi.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20230321151353_Initial")]
+    [Migration("20230322094450_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
